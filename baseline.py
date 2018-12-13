@@ -127,3 +127,30 @@ cmc10 = np.sum(rank10, axis = 1) > 0
 print( 'rank 1: {}%'.format(np.sum(cmc1)/cmc1.shape[0]* 100))
 print( 'rank 5: {}%'.format(np.sum(cmc5)/cmc5.shape[0]* 100 ))
 print( 'rank 10: {}%'.format(np.sum(cmc10)/cmc10.shape[0]*100))
+mAP()
+
+def mAP():
+    average_precision=[]
+    ranklist = np.loadtxt(open("baseline_ranklist.csv", "rb"), delimiter=",")
+    for i in range(len(ranklist)):
+        precision=[]
+        recall=[]
+        precisions=[]
+        s=sum(ranklist[i,:])
+        for j in range(1,ranklist.shape[1]):
+            precision.append(sum(ranklist[i,:j]/j))
+            recall.append(sum(ranklist[i,:j]/s))
+            if recall[j-1] == 1:
+                  break
+
+        u=[]
+        indices=[]
+        recall=np.array(recall)
+        precision=np.array(precision)
+        u, indices=np.unique(recall,return_index=True)
+
+        precisions=precision[indices]
+        precisions=precisions[precisions!=0]
+        average_precision.append(np.mean(precisions))
+    average_precision = np.nan_to_num(average_precision)
+    print('mAP :{}'.format(np.mean(average_precision[1:])))
