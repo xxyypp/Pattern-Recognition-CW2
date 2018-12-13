@@ -1,4 +1,15 @@
-'''Import'''
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Coursework 2
+
+# ## Import mat
+
+# ## While evaluating (testing) your algorithms, you should not consider images of your current query identity taken from the same camera. For example, when you create ranklist for the first query image (index 22, label 3, camera 1, name "1_003_1_02.png"), you should not include images with indexes 21, 23, 24 in this ranking list, as these are images of the same person (label 3) captured by the camera with index 1.
+
+# In[1]:
+
+
 from scipy.io import loadmat
 #contains indexes of images that can be used for training and validation (Training Validating)   (7368,) 7368 images  (7-10) per person
 train_idxs = loadmat('./PR_data/cuhk03_new_protocol_config_labeled.mat')['train_idx'].flatten()
@@ -18,16 +29,36 @@ labels = loadmat('./PR_data/cuhk03_new_protocol_config_labeled.mat')['labels'].f
 #contains indexes of query images (Testing)
 query_idx = loadmat('./PR_data/cuhk03_new_protocol_config_labeled.mat')['query_idx'].flatten()
 
+import sys
+print(sys.version)
+
+
+# In[34]:
+
+
+print(train_idxs.shape)
+
+
+# # Import JSON file (14096 x 2048)
+
+# In[2]:
+
+
 import json
 import numpy as np
 with open('feature_data.json', 'r') as f:
     features = json.load(f)
     
 feature = np.asarray(features)
-#-------------------------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------------------------------
-# Training set
+
+# # Training & Testing & Validating set
+
+# # Training set
+
+# In[4]:
+
+
 fea_train = []
 lbl_train = []
 
@@ -37,10 +68,13 @@ for i in train_idxs:
 
 fea_train = np.asarray(fea_train)
 lbl_train = np.asarray(lbl_train)
-#-------------------------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------------------------------
-# Query set
+
+# # Query
+
+# In[6]:
+
+
 query_feature = []
 query_lbl = []
 query_camid = []
@@ -53,10 +87,13 @@ for i in query_idx:
 query_feature = np.asarray(query_feature)
 query_lbl = np.asarray(query_lbl)
 query_camid = np.asarray(query_camid)
-#-------------------------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------------------------------
-#Gallery
+
+# # Gallery
+
+# In[8]:
+
+
 gallery_feature = []
 gallery_lbl = []
 gallery_camid = []
@@ -69,10 +106,13 @@ for i in gallery_idx:
 gallery_feature = np.asarray(gallery_feature)
 gallery_lbl = np.asarray(gallery_lbl)
 gallery_camid = np.asarray(gallery_camid)
-#-------------------------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------------------------------
-# Combine lbl and feature
+
+# # Combine lbl and feature
+
+# In[10]:
+
+
 q = query_feature.T
 
 #feature, camid, lbl
@@ -83,7 +123,35 @@ q_combine = (np.vstack((q,query_camid,query_lbl))).T
 g = gallery_feature.T
 g_combine = (np.vstack( ( g, gallery_camid, gallery_lbl ))).T
 
-#NN
+
+# In[11]:
+
+
+print(q.shape)
+print(query_camid.shape)
+print(query_lbl.shape)
+print(q_combine.T.shape)
+
+print(g.shape)
+print(gallery_camid.shape)
+print(gallery_lbl.shape)
+print(g_combine.shape)
+
+
+# In[12]:
+
+
+print( 'Query Augmented: {}'.format( q_combine.shape ) )
+print( 'Gallery Augmented: {}'.format( g_combine.shape ) )
+print(q_combine[2])
+print(g_combine[2])
+
+
+# # NN
+
+# In[110]:
+
+
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
 from tqdm import tqdm
@@ -116,6 +184,10 @@ for i in tqdm(range(q_combine.shape[0])):
 query_rank_list_20 = np.asarray(query_rank_list_20)
 np.savetxt( 'baseline_ranklist.csv', query_rank_list_20, delimiter= ',' )
 
+
+# In[109]:
+
+
 rank1 = query_rank_list_20.T[0].T
 rank5  = query_rank_list_20.T[:5].T
 rank10 = query_rank_list_20.T[:10].T
@@ -127,7 +199,12 @@ cmc10 = np.sum(rank10, axis = 1) > 0
 print( 'rank 1: {}%'.format(np.sum(cmc1)/cmc1.shape[0]* 100))
 print( 'rank 5: {}%'.format(np.sum(cmc5)/cmc5.shape[0]* 100 ))
 print( 'rank 10: {}%'.format(np.sum(cmc10)/cmc10.shape[0]*100))
+
 mAP()
+
+
+# In[108]:
+
 
 def mAP():
     average_precision=[]
@@ -154,3 +231,10 @@ def mAP():
         average_precision.append(np.mean(precisions))
     average_precision = np.nan_to_num(average_precision)
     print('mAP :{}'.format(np.mean(average_precision[1:])))
+
+
+# In[ ]:
+
+
+
+
