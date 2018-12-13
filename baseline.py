@@ -24,7 +24,9 @@ with open('feature_data.json', 'r') as f:
     features = json.load(f)
     
 feature = np.asarray(features)
+#-------------------------------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------------------------------
 # Training set
 fea_train = []
 lbl_train = []
@@ -35,7 +37,9 @@ for i in train_idxs:
 
 fea_train = np.asarray(fea_train)
 lbl_train = np.asarray(lbl_train)
+#-------------------------------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------------------------------
 # Query set
 query_feature = []
 query_lbl = []
@@ -49,7 +53,9 @@ for i in query_idx:
 query_feature = np.asarray(query_feature)
 query_lbl = np.asarray(query_lbl)
 query_camid = np.asarray(query_camid)
+#-------------------------------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------------------------------
 #Gallery
 gallery_feature = []
 gallery_lbl = []
@@ -63,7 +69,9 @@ for i in gallery_idx:
 gallery_feature = np.asarray(gallery_feature)
 gallery_lbl = np.asarray(gallery_lbl)
 gallery_camid = np.asarray(gallery_camid)
+#-------------------------------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------------------------------
 # Combine lbl and feature
 q = query_feature.T
 
