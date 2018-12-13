@@ -131,9 +131,6 @@ for identity in tqdm( shuffle_lbl ):
     
     train = train[ np.where( train[ :, -1 ] != identity )]
 val = np.delete(val, (0), axis=0)
-print( 'Training Set with Validation removed: {}'.format( train.shape ) )
-print( 'Validation Set: {} ( Has an extra row due to np.zeros )'.format( val.shape ) )
-
 
 # # Large Margin Nearest Neighbor (LMNN)
 
