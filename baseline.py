@@ -86,46 +86,44 @@ g_combine = (np.vstack( ( g, gallery_camid, gallery_lbl ))).T
 #NN
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
-from tqdm import tqdm_notebook
-knn_n_neighbour = 20
-knn_metric = 'euclidean'
+from tqdm import tqdm
+
+X_train = g_combine[:,:-2]
+y_train = g_combine[:,-1]
+classifier = NearestNeighbors(n_neighbors=20, metric = 'euclidean')
+classifier.fit(X_train, y_train)
 
 query_rank_list_20 = []
+
 acc = []
 
-for i in range(q_combine.shape[0]):
+for i in tqdm(range(q_combine.shape[0])):
+    
     query_lbl = q_combine[i,-1].astype(int)
     
-    #Delete same camid and label
-    gallery_del = g_combine[~np.logical_and((g_combine[:,-1] == q_combine[i,-1]),
-                                            (g_combine[:,-2] == q_combine[i,-2]))]
-    
-    
-    y_train = gallery_del[:,-1]
-    X_train = gallery_del[:,:-2]
-    classifier = NearestNeighbors(n_neighbors=knn_n_neighbour, metric = knn_metric)
-    classifier.fit(X_train, y_train)
-    
-    #classifier_ = KNeighborsClassifier(n_neighbors=knn_n_neighbour, metric = knn_metric)
-    #classifier_.fit(X_train, y_train)
-    #acc_ = classifier_.score(query_feature,query_lbl)
-    #acc.append([acc])
     
     X_test = q_combine[i,:-2].reshape(1,-1)
     dist, index = classifier.kneighbors(X_test)
-    rank_list = [gallery_del[i,-1].astype(int) == query_lbl for i in index.flatten()]
+    index = index.flatten()
+    ii = 0
+    rank_list = []
+    for j in index:
+        if len(rank_list) < 15:
+            if g_combine[j,-1] !=  q_combine[i,-1] or g_combine[j,-2] !=  q_combine[i,-2]:
+                rank_list.append(g_combine[j,-1].astype(int) == query_lbl)
     query_rank_list_20.append(rank_list)
 
 query_rank_list_20 = np.asarray(query_rank_list_20)
+np.savetxt( 'baseline_ranklist.csv', query_rank_list_20, delimiter= ',' )
 
 rank1 = query_rank_list_20.T[0].T
-rank5  = query_rank_list_20.T[ : 5 ].T
-rank10 = query_rank_list_20.T[ : 10 ].T
+rank5  = query_rank_list_20.T[:5].T
+rank10 = query_rank_list_20.T[:10].T
 
 cmc1  = rank1
-cmc5  = np.sum(rank5, axis = 1) > 0 # Dirty python trick: sum across rows, if sum > 0, set to 1
+cmc5  = np.sum(rank5, axis = 1) > 0
 cmc10 = np.sum(rank10, axis = 1) > 0
 
-print( 'rank@1: {}%'.format( np.sum(cmc1) / cmc1.shape[ 0 ] * 100 ) )
-print( 'rank@5: {}%'.format( np.sum(cmc5) / cmc5.shape[ 0 ] * 100 ) )
-print( 'rank@10: {}%'.format( np.sum(cmc10) / cmc10.shape[ 0 ] * 100 ) )
+print( 'rank 1: {}%'.format(np.sum(cmc1)/cmc1.shape[0]* 100))
+print( 'rank 5: {}%'.format(np.sum(cmc5)/cmc5.shape[0]* 100 ))
+print( 'rank 10: {}%'.format(np.sum(cmc10)/cmc10.shape[0]*100))
