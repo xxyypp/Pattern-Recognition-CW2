@@ -109,3 +109,15 @@ for i in range(q_combine.shape[0]):
     query_rank_list_20.append(rank_list)
 
 query_rank_list_20 = np.asarray(query_rank_list_20)
+
+rank1 = query_rank_list_20.T[0].T
+rank5  = query_rank_list_20.T[ : 5 ].T
+rank10 = query_rank_list_20.T[ : 10 ].T
+
+cmc1  = rank1
+cmc5  = np.sum(rank5, axis = 1) > 0 # Dirty python trick: sum across rows, if sum > 0, set to 1
+cmc10 = np.sum(rank10, axis = 1) > 0
+
+print( 'rank@1: {}%'.format( np.sum(cmc1) / cmc1.shape[ 0 ] * 100 ) )
+print( 'rank@5: {}%'.format( np.sum(cmc5) / cmc5.shape[ 0 ] * 100 ) )
+print( 'rank@10: {}%'.format( np.sum(cmc10) / cmc10.shape[ 0 ] * 100 ) )
