@@ -105,6 +105,5 @@ for i in tqdm(range(q_combine.shape[0])):
     query_rank_list.append(rank_list)
 query_rank_list = np.asarray( query_rank_list )
 
-cmc  = np.sum(query_rank_list, axis = 1) > 0 # Dirty python trick: sum across rows, if sum > 0, set to 1
-
+cmc  = np.sum(query_rank_list, axis = 1) > 0
 print( 'rank: {}%'.format( np.sum(cmc) / cmc.shape[ 0 ] * 100 ) )
