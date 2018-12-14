@@ -111,7 +111,7 @@ rank5  = query_rank_list_20.T[ : 5 ].T
 rank10 = query_rank_list_20.T[ : 10 ].T
 
 cmc1  = rank1
-cmc5  = np.sum(rank5, axis = 1) > 0 # Dirty python trick: sum across rows, if sum > 0, set to 1
+cmc5  = np.sum(rank5, axis = 1) > 0 
 cmc10 = np.sum(rank10, axis = 1) > 0
 
 print( 'rank@1: {}%'.format( np.sum(cmc1) / cmc1.shape[ 0 ] * 100 ) )
