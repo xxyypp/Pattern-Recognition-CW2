@@ -10,6 +10,7 @@ Nearest Neighbour (NN) algorithms we can find the accuracy of the re-identificat
 # Instruction
 Download the zip file or git clone the repository from
 Our GitHub : https://github.com/xxyypp/PatternRecognition-CW2
+
 • Our source codes are in both Jupyter notebook (*.ipytb) and Python (*.py) format
 
 • File name indicates which methods that we used, for example: ”baseline.ipytb” and ”baseline.py” are the source code for the baseline method; "kpca rbf.ipytb" and "kpca rbf.py" are the KPCA methods using RBF kernel.
